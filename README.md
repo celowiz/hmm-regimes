@@ -25,7 +25,7 @@ Ferramenta **educacional** que estima, com um *Hidden Markov Model* gaussiano, e
 - Um regime de estresse pode ter retorno médio positivo por causa de repiques fortes.
 
 ## Atualização
-GitHub Actions (`.github/workflows/pages.yml`) roda testes, baixa dados, reajusta os modelos e publica no GitHub Pages a cada push e de segunda a sexta às 19:30 (horário de Brasília). Candles do dia antes das 18:30 BRT são descartados.
+GitHub Actions (`.github/workflows/pages.yml`) roda testes, baixa dados, reajusta os modelos e publica no GitHub Pages a cada push e de segunda a sexta às 19:13 (horário de Brasília), com um cron reserva às 21:13 que só refaz o build se o principal ainda não tiver publicado. O download do Yahoo tem novas tentativas com espera crescente. Candles do dia antes das 18:30 BRT são descartados.
 
 O job também grava `data/summary.json` (`scripts/summary.py`, ~2 KB): regime atual do modelo diário de 3 estados, probabilidade, data de início e a faixa dos últimos 60 pregões para Ibovespa e S&P 500. É o que a página [Mercado Hoje](https://celowiz.github.io/mercado-hoje/) do portfólio lê.
 

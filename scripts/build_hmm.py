@@ -9,6 +9,8 @@ import datetime as dt, json, math, os, sys
 import numpy as np, pandas as pd, yfinance as yf
 from hmmlearn.hmm import GaussianHMM
 from scipy.special import logsumexp
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from net import retry
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), "..", "data")
 START = "2000-01-01"
@@ -16,8 +18,14 @@ SEEDS = [7, 11, 23, 42, 101]
 
 MARKETS = {"ibov": ("^BVSP", "Ibovespa"), "spx": ("^GSPC", "S&P 500")}
 
-def load(sym):
+def download(sym):
     s = yf.download(sym, start="1999-06-01", auto_adjust=True, progress=False)["Close"].squeeze().dropna()
+    if len(s) < 1000:  # o Yahoo às vezes devolve vazio ou truncado: vale nova tentativa
+        raise RuntimeError(f"{sym}: só {len(s)} pregões no Yahoo Finance")
+    return s
+
+def load(sym):
+    s = retry(lambda: download(sym), what=f"Yahoo {sym}")
     s.index = pd.to_datetime(s.index).tz_localize(None)
     return drop_intraday(s)
 
