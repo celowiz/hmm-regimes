@@ -27,10 +27,13 @@ Ferramenta **educacional** que estima, com um *Hidden Markov Model* gaussiano, e
 ## Atualização
 GitHub Actions (`.github/workflows/pages.yml`) roda testes, baixa dados, reajusta os modelos e publica no GitHub Pages a cada push e de segunda a sexta às 19:30 (horário de Brasília). Candles do dia antes das 18:30 BRT são descartados.
 
+O job também grava `data/summary.json` (`scripts/summary.py`, ~2 KB): regime atual do modelo diário de 3 estados, probabilidade, data de início e a faixa dos últimos 60 pregões para Ibovespa e S&P 500. É o que a página [Mercado Hoje](https://celowiz.github.io/mercado-hoje/) do portfólio lê.
+
 ## Rodar localmente
 ```bash
 pip install -r requirements.txt
 python -m pytest -q tests
 python scripts/build_hmm.py data
+python scripts/summary.py data
 python -m http.server 8000
 ```

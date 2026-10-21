@@ -28,6 +28,9 @@ jobs:
         run: python -m pytest -q tests
       - name: Baixar dados e ajustar HMM
         run: python scripts/build_hmm.py _site/data
+      # Resumo pequeno (data/summary.json) lido pela página Mercado Hoje do portfólio
+      - name: Resumo para o portfólio
+        run: python scripts/summary.py _site/data
       - name: Montar site
         run: |
           cp -r index.html css js favicon.svg favicon-32.png apple-touch-icon.png og.png _site/
