@@ -1,6 +1,10 @@
-yfinance>=0.2.40
-pandas
-numpy
-scipy
-hmmlearn
-pytest
+# Versões exatas = as que o CI instalou e validou (run 40046339500, 23/10/2026).
+# Fixar evita que um upgrade silencioso do pandas/yfinance/hmmlearn quebre o cron diário.
+yfinance==1.7.0
+pandas==3.1.0
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
+hmmlearn==0.3.3
+requests==2.34.2
+pytest==9.1.1

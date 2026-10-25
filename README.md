@@ -2,7 +2,9 @@
 
 Ferramenta **educacional** que estima, com um *Hidden Markov Model* gaussiano, em que regime de mercado (calmo, intermediário ou estresse) o Ibovespa e o S&P 500 estão — e estiveram desde 2000.
 
-**Ao vivo:** https://celowiz.github.io/hmm-regimes/
+**▶ Abrir o app: [celowiz.github.io/hmm-regimes](https://celowiz.github.io/hmm-regimes/)**
+
+[![Regimes de mercado (HMM): regime atual e preço colorido pelo regime](docs/screenshot.png)](https://celowiz.github.io/hmm-regimes/)
 
 > Conteúdo educacional. Não constitui recomendação de investimento.
 
@@ -37,3 +39,6 @@ python scripts/build_hmm.py data
 python scripts/summary.py data
 python -m http.server 8000
 ```
+
+## Licença
+Código sob licença [MIT](LICENSE). Dados do Yahoo Finance seguem os termos da fonte.
