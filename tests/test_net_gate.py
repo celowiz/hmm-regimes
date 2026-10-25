@@ -5,7 +5,7 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
-from backup_gate import already_built, threshold  # noqa: E402
+from backup_gate import expected_trading_day, has_latest  # noqa: E402
 from net import backoff, retry  # noqa: E402
 
 UTC = dt.timezone.utc
@@ -40,20 +40,22 @@ def test_retry_repassa_a_ultima_falha():
     assert waits == [1, 3]
 
 
-def test_threshold_19h_brt():
-    # 21:07 BRT de terça (00:07Z de quarta) → limiar 19:00 BRT de terça
-    now = dt.datetime(2026, 10, 21, 0, 7, tzinfo=UTC)
-    assert threshold(now) == dt.datetime(2026, 10, 20, 22, 0, tzinfo=UTC)
-    # 10:00 BRT → limiar 19:00 BRT do dia anterior
-    assert threshold(dt.datetime(2026, 10, 21, 13, 0, tzinfo=UTC)) == dt.datetime(2026, 10, 20, 22, 0, tzinfo=UTC)
+def test_pregao_esperado():
+    # 21:07 BRT de quinta 22/10 (00:07Z de sexta) → quinta
+    assert expected_trading_day(dt.datetime(2026, 10, 23, 0, 7, tzinfo=UTC)) == dt.date(2026, 10, 22)
+    # 10:00 BRT de sexta → ainda não fechou: quinta
+    assert expected_trading_day(dt.datetime(2026, 10, 23, 13, 0, tzinfo=UTC)) == dt.date(2026, 10, 22)
+    # 01:23 BRT de sábado 24/10 (04:23Z) → sexta 23/10
+    assert expected_trading_day(dt.datetime(2026, 10, 24, 4, 23, tzinfo=UTC)) == dt.date(2026, 10, 23)
+    # 08:07 BRT de segunda → sexta
+    assert expected_trading_day(dt.datetime(2026, 10, 26, 11, 7, tzinfo=UTC)) == dt.date(2026, 10, 23)
 
 
-def test_already_built():
-    now = dt.datetime(2026, 10, 21, 0, 7, tzinfo=UTC)
-    assert already_built("2026-10-20T22:40:00Z", now)          # principal rodou (atrasado) → pula
-    assert already_built("2026-10-20T22:40", now)              # sem fuso = UTC
-    assert already_built("2026-10-20T19:40:00-03:00", now)
-    assert not already_built("2026-10-20T21:59:59Z", now)      # antes do cron principal
-    assert not already_built("2026-10-19T23:00:00Z", now)      # ontem → roda
-    assert not already_built(None, now)
-    assert not already_built("lixo", now)
+def test_has_latest_olha_a_data_dos_dados():
+    # gerado depois das 19h, mas com o pregão anterior → NÃO pula (o gate antigo, por generated_at, pularia)
+    sab = dt.datetime(2026, 10, 24, 4, 23, tzinfo=UTC)
+    assert not has_latest("2026-10-22", sab)
+    assert has_latest("2026-10-23", sab)
+    assert has_latest("2026-10-23T00:00:00", sab)
+    assert not has_latest(None, sab)
+    assert not has_latest("lixo", sab)

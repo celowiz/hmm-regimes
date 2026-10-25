@@ -8,8 +8,9 @@ on:
   schedule:
     # Minuto fora do :00/:30 (horários mais disputados no GitHub Actions, que atrasam 2–3 h).
     - cron: "13 22 * * 1-5"   # 19:13 BRT, após o fechamento da B3 e de NY
-    # Reserva ~2 h depois: só refaz o build se o principal ainda não publicou dados de hoje (job gate).
+    # Reservas: só refazem o build se o site publicado ainda não tem o último pregão (job gate, olha data/summary.json → as_of).
     - cron: "13 0 * * 2-6"    # 21:13 BRT
+    - cron: "23 11 * * 2-6"  # 08:23 BRT do dia seguinte: última chance antes da abertura
 permissions:
   contents: read
   pages: write
@@ -18,19 +19,19 @@ concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: false
 jobs:
-  # Cron reserva: confere o data/summary.json publicado e pula o build se já houver dados de depois das 19h BRT.
+  # Crons reserva: conferem o data/summary.json publicado e pulam o build se ele já tiver o último pregão (as_of).
   gate:
     runs-on: ubuntu-latest
     outputs:
       skip: ${{ steps.check.outputs.skip }}
     steps:
       - uses: actions/checkout@v7
-        if: github.event.schedule == '13 0 * * 2-6'
+        if: github.event_name == 'schedule' && github.event.schedule != '13 22 * * 1-5'
         with:
           sparse-checkout: scripts/backup_gate.py
           sparse-checkout-cone-mode: false
       - id: check
-        if: github.event.schedule == '13 0 * * 2-6'
+        if: github.event_name == 'schedule' && github.event.schedule != '13 22 * * 1-5'
         run: python3 scripts/backup_gate.py https://celowiz.github.io/hmm-regimes/data/summary.json
   build:
     needs: gate
