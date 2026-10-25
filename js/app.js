@@ -39,7 +39,7 @@ function cv(id){const c=$(id),r=c.getBoundingClientRect(),dp=devicePixelRatio||1
 function draw(){if(!D)return;const[a,b]=range(),N=b-a,P=D.px.slice(a,b);
  const[x,W,H]=cv('cPx'),pl=8,pr=58,pt=10,pb=22,lg=P.map(Math.log),lo=Math.min(...lg),hi=Math.max(...lg);
  const X=i=>pl+i/(N-1)*(W-pl-pr),Y=v=>pt+(hi-Math.log(v))/(hi-lo||1)*(H-pt-pb);view={a,N,X,Y,W,pl,pr};
- x.font='10.5px ui-monospace,Menlo,monospace';x.fillStyle='#71717a';x.strokeStyle='#1c1c1f';x.lineWidth=1;
+ x.font='10.5px ui-monospace,Menlo,monospace';x.fillStyle='#8a8a93';x.strokeStyle='#1c1c1f';x.lineWidth=1;
  for(let t=0;t<=4;t++){const v=Math.exp(lo+(hi-lo)*t/4),y=Y(v);x.beginPath();x.moveTo(pl,y);x.lineTo(W-pr,y);x.stroke();x.fillText(Math.round(v).toLocaleString('pt-BR'),W-pr+6,y+3)}
  ticks(x,a,N,X,H-6);
  if(S.mom!=null){const m=MOM[S.mk][S.mom];let i0=D.dates.findIndex(d=>d>=m[0])-a,i1=D.dates.findIndex(d=>d>m[1])-a;if(i1<0)i1=N-1;x.fillStyle='rgba(244,241,234,.05)';x.fillRect(X(i0),pt,X(i1)-X(i0),H-pt-pb)}
@@ -49,7 +49,7 @@ function draw(){if(!D)return;const[a,b]=range(),N=b-a,P=D.px.slice(a,b);
  const band=(src,top,lab)=>{for(let i=0;i<N;i++){let acc=0;const p=src[a+i];for(let j=D.k-1;j>=0;j--){y.fillStyle=COL[D.names[j]];const hh=p[j]*h2;y.fillRect(X2(i),top+acc,Math.max(1,(W2-pl-pr)/N+.5),hh);acc+=hh}}
   y.fillStyle='#a1a1aa';y.font='10.5px ui-monospace,Menlo,monospace';y.fillText(lab,W2-pr+6,top+12)};
  band(D.filt,0,'filtrada');if(S.sm)band(D.smooth,h2+6,'suavizada');ticks(y,a,N,X2,H2-6)}
-function ticks(x,a,N,X,y){x.fillStyle='#71717a';const y0=+D.dates[a].slice(0,4),y1=+D.dates[a+N-1].slice(0,4),st=Math.max(1,Math.ceil((y1-y0)/8));let last='';
+function ticks(x,a,N,X,y){x.fillStyle='#8a8a93';const y0=+D.dates[a].slice(0,4),y1=+D.dates[a+N-1].slice(0,4),st=Math.max(1,Math.ceil((y1-y0)/8));let last='';
  for(let i=0;i<N;i++){const yr=D.dates[a+i].slice(0,4);if(yr!==last){last=yr;if((+yr-y0)%st===0&&i>0||N<300&&i>0)x.fillText(yr,X(i)-12,y)}}}
 const tip=$('tip');$('cPx').onmousemove=e=>{if(!view)return;const r=e.target.getBoundingClientRect(),mx=e.clientX-r.left;const i=Math.round((mx-view.pl)/(view.W-view.pl-view.pr)*(view.N-1));if(i<0||i>=view.N){tip.hidden=true;return}
  const g=view.a+i,p=D.filt[g];tip.hidden=false;tip.innerHTML=`${fmtD(D.dates[g])} · ${Math.round(D.px[g]).toLocaleString('pt-BR')}<br>`+D.names.map((n,j)=>`<span style="color:${COL[n]}">${NAME[n]} ${pct(p[j],0)}</span>`).join('<br>');
